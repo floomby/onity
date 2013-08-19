@@ -1,3 +1,5 @@
+//#define USE_SERIAL
+
 int ioPin = 3;
 #define BUFSIZE 200
 unsigned char buf[BUFSIZE];
@@ -41,6 +43,7 @@ unsigned char bits[][144] = {
   {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
   {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 0, 1, 0, 1, 1, 1, 1, 0, 0, 1, 0, 1, 0}
 };
+
 int A, B, C;
 unsigned char Ac[8], Bc[8], Cc[8];
 
@@ -52,21 +55,28 @@ void bitConv(int n, unsigned char *out)
     *(out+i) = (n&(1<<i))>>i;
 }
 
-void wentLow() {
+void wentLow()
+{
   bval = 1;
 }
 
-void setup() {
+void setup()
+{
   A = B = C = 0;
+#ifdef USE_SERIAL
   Serial.begin(9600);
-}
-int temp;
-void open() {
+#endif
+
   pinMode(ioPin, OUTPUT);
   digitalWrite(ioPin, LOW);
   pinMode(ioPin, INPUT);
   digitalWrite(ioPin, LOW);
-  
+}
+
+int temp;
+
+void open()
+{  
   bitConv(A, Ac);
   bitConv(B, Bc);
   bitConv(C, Cc);
@@ -139,17 +149,21 @@ void open() {
   bits[0][91] ^= 0;
   bits[0][92] ^= 1;
   bits[0][93] ^= 1;
+
+
   delay(100);
+
+#ifdef USE_SERIAL
   for(int j = 0; j < 11; ++j) {
     for(int i = 0; i < sizeof(bits[j]); ++i) {
       Serial.print(bits[j][i]);
     }
     Serial.println();
   }
-  delay(100);
+#endif //USE_SERIAL
 }
 
-void loop() {
+void loop(){
     open();
     if(A < 255){
       A++;
