@@ -46,7 +46,7 @@ unsigned char Ac[8], Bc[8], Cc[8];
 
 unsigned char bval;
 
-void bitConv(int n, int *out)
+void bitConv(int n, unsigned char *out)
 {
   for(int i = sizeof(n)*8-1; i >= 0; i --)
     *(out+i) = (n&(1<<i))>>i;
@@ -58,6 +58,7 @@ void wentLow() {
 
 void setup() {
   A = B = C = 0;
+  Serial.begin(9600);
 }
 int temp;
 void open() {
@@ -113,7 +114,7 @@ void open() {
   unsigned int i = 0;
   while(digitalRead(ioPin) == HIGH && i++ < 32767) {}
   if(i == 32767)
-    return false;
+    return;
 
   delayMicroseconds(20);
   for(int i = 0; i < 164; ++i) {
